@@ -1,17 +1,33 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
-
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    {{ __("You're logged in!") }}
-                </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="shadow card">
+            <div class="text-white card-header bg-primary">
+                <h3>Dashboard</h3>
             </div>
+            <div class="card-body">
+        <img src="{{ Auth::user()->avatar }}" alt="" class="mb-3 img-thumbnail" style="width: 150px; height: 150px;">
+                <ul class="list-group">
+                    <li class="list-group-item"><strong>Name:</strong> {{ Auth::user()->name }}</li>
+                    <li class="list-group-item"><strong>Email:</strong> {{ Auth::user()->email }}</li>
+                    <li class="list-group-item"><strong>Google ID:</strong> {{ Auth::user()->id }}</li>
+                  
+                </ul>
+            </div>
+            <div class="text-center card-footer">
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn btn-danger">Logout</button>
+                </form>
+            </div> 
         </div>
     </div>
-</x-app-layout>
+</body>
+</html>

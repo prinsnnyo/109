@@ -17,29 +17,41 @@ class GoogleAuthController extends Controller
     }
 
     public function callbackGoogle()
-    {
-        try {
-            $google_user = Socialite::driver('google')
-                ->setHttpClient(new \GuzzleHttp\Client(['verify' => false]))
-                ->user();
+{
+    try {
+        // Get user details from Google
+        $google_user = Socialite::driver('google')
+            ->setHttpClient(new \GuzzleHttp\Client(['verify' => false]))
+            ->user();
 
-            $user = User::where('google_id', $google_user->getId())->first();
+        // Check if the user already exists based on google_id or email
+        $user = User::where('google_id', $google_user->getId())
+                    ->orWhere('email', $google_user->getEmail())
+                    ->first();
 
-            if (!$user) {
-                $new_user = User::create([
-                    'name' => $google_user->getName(),
-                    'email' => $google_user->getEmail(),
-                    'google_id' => $google_user->getId()
-                ]);
-                Auth::login($new_user);
-
-                return redirect()->intended('dashboard');
-            } else {
-                Auth::login($user);
-                return redirect()->intended('dashboard');
-            }
-        } catch (\Throwable $th) {
-            dd('Something went wrong: ' . $th->getMessage());
+        // If the user doesn't exist, create a new one
+        if (!$user) {
+            $user = User::create([
+                'name' => $google_user->getName(),
+                'email' => $google_user->getEmail(),
+                'id' => $google_user->getId(),
+                
+                 // Store google_id
+                'password' => null // No password needed, leave it as null
+            ]);
         }
+
+        // Log the user in
+        Auth::login($user);
+
+        // Redirect to the dashboard
+        return redirect()->intended('dashboard');
+
+    } catch (\Throwable $th) {
+        dd('Something went wrong: ' . $th->getMessage());
     }
+}
+
+
+
 }
